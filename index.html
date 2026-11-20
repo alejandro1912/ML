@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Introducción al Machine Learning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600;7..72,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday learning: a clear, calm textbook for a first course
+   IDEA a scientific plate: large figures with leader-line callouts, numbered by section like a lab manual
+   PICTURE nested rings IA > ML > DL > IA generativa, clickable, then a working demo per concept
+   COLOUR white ground, ink #10131a, prussian #0b4f8a (class A, main marks), carmine #c1121f (accent, class B)
+   TYPE Literata display + Literata text, JetBrains Mono for code
+   LAYOUT laptop: title band, ring figure beside its reading panel; phone: title, figure, panel stacked */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#0f1217);--ink:light-dark(#10131a,#e7e9ee);--mute:light-dark(#4a5160,#a3aab8);
+--rule:light-dark(#dfe2e8,#2a303a);--panel:light-dark(#f4f6f9,#171b22);
+--pr:light-dark(#0b4f8a,#6aa7e8);--ca:light-dark(#c1121f,#ff6670);--oc:light-dark(#b07800,#e0b040);
+--gr:light-dark(#2e7d32,#6cc070);--vi:light-dark(#6a4c93,#b39ddb);
+--prs:light-dark(#e3eef8,#14263a);--cas:light-dark(#fbe7e8,#3a1a1d);--code:#14181f}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Literata",Georgia,serif;overflow-x:clip}
+h1,h2,h3{font-weight:700;letter-spacing:-.02em;line-height:1.08;text-wrap:balance;margin:0}
+h1{font-size:clamp(36px,5.2vw,56px)}
+h2{font-size:clamp(28px,3.4vw,40px);margin-bottom:10px}
+h3{font-size:21px;margin:22px 0 8px;line-height:1.2}
+p{margin:0 0 12px;max-width:70ch}
+a{color:var(--pr)}
+.band{padding:clamp(28px,4vw,60px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+.lede{font-size:clamp(18px,1.6vw,20px);color:var(--mute);max-width:62ch}
+.top{background:var(--pr);color:#fff;padding-bottom:24px}
+.top .lede{color:#dfeaf6}
+.top h1{color:#fff;margin-bottom:12px}
+nav.scroll{display:flex;gap:4px;overflow-x:auto;padding:10px max(5vw,16px);border-bottom:1px solid var(--rule);background:var(--bg);scrollbar-width:thin}
+nav.scroll a{flex:none;text-decoration:none;color:var(--ink);font-size:15px;padding:8px 12px;border-radius:99px}
+nav.scroll a:hover,nav.scroll a:focus-visible{background:var(--prs);outline:none}
+@media(min-width:900px){nav.scroll{position:sticky;top:0;z-index:5}}
+.num{font-size:15px;font-weight:600;color:var(--ca);margin-bottom:6px}
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(20px,3vw,44px);align-items:stretch}
+.fig{position:relative;min-height:380px}
+.fig>svg,.fig>canvas{position:absolute;inset:0;width:100%;height:100%}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:20px 22px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.tag{display:inline-block;font-size:14px;font-weight:600;padding:2px 10px;border-radius:99px;background:var(--prs);color:var(--pr);margin:0 4px 4px 0}
+.tag.c{background:var(--cas);color:var(--ca)}
+.flow{display:grid;grid-template-columns:auto auto auto auto auto;gap:10px;align-items:center;justify-content:start;margin:10px 0 4px}
+.box{border:1.5px solid var(--ink);border-radius:8px;padding:8px 12px;font-size:15px;text-align:center;background:var(--bg)}
+.box.hl{border-color:var(--ca);color:var(--ca);font-weight:700}
+.arrow{color:var(--mute);font-size:20px}
+.route{list-style:none;padding:0;margin:20px 0 0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));position:relative}
+.route::before{content:"";position:absolute;left:8%;right:8%;top:17px;height:4px;background:var(--pr);border-radius:4px}
+.route li{position:relative;text-align:center;padding:0 8px}
+.route .dot{width:38px;height:38px;border-radius:50%;background:var(--bg);border:4px solid var(--pr);margin:0 auto 10px;display:grid;place-items:center;font-weight:700;color:var(--pr);position:relative}
+.route b{display:block;font-size:16px;line-height:1.25;margin-bottom:4px}
+.route span{font-size:14.5px;color:var(--mute);display:block;line-height:1.4}
+table{border-collapse:collapse;width:100%;font-size:15.5px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-weight:700;border-bottom:2px solid var(--ink)}
+.scroll{overflow-x:auto}
+.data th{cursor:pointer;white-space:nowrap}
+.data th:hover,.data th.on{background:var(--prs);color:var(--pr)}
+.data th.lab,.data td.lab{color:var(--ca)}
+.data th.lab.on{background:var(--cas)}
+.data td{font-variant-numeric:tabular-nums}
+.small{font-size:14.5px;color:var(--mute)}
+.types{display:grid;grid-template-columns:repeat(auto-fit,minmax(14em,1fr));gap:14px;margin-top:14px}
+.types div{border-top:3px solid var(--pr);padding-top:10px}
+.types div.u{border-color:var(--oc)}
+.types b{display:block}
+.types span{font-size:15px;color:var(--mute)}
+.split{display:flex;height:38px;border-radius:8px;overflow:hidden;margin:10px 0;font-size:15px;font-weight:600;color:#fff}
+.split div{display:grid;place-items:center}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px}
+.tabs button,.btn{font:600 15.5px "Literata",Georgia,serif;min-height:44px;padding:8px 16px;border-radius:10px;border:1.5px solid var(--rule);background:var(--bg);color:var(--ink);cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--pr);border-color:var(--pr);color:#fff}
+.btn:hover,.tabs button:hover{border-color:var(--pr)}
+.btn:focus-visible,.tabs button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--ca);outline-offset:2px}
+.btn.p{background:var(--pr);border-color:var(--pr);color:#fff}
+.ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.ctrl label{font-size:15.5px;display:flex;gap:8px;align-items:center}
+input[type=range]{accent-color:var(--ca);width:180px;height:30px}
+input[type=number],select{font:16px "Literata",Georgia,serif;padding:8px 10px;border:1.5px solid var(--rule);border-radius:8px;background:var(--bg);color:var(--ink);min-height:44px}
+input[type=number]{width:7em}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(8em,1fr));gap:10px;margin:10px 0}
+.stat div{border-left:3px solid var(--pr);padding:2px 0 2px 10px}
+.stat b{display:block;font-size:clamp(22px,2.4vw,28px);font-variant-numeric:tabular-nums;white-space:nowrap}
+.stat span{font-size:14px;color:var(--mute)}
+.demo{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:24px;align-items:start}
+.demo .fig{border:1px solid var(--rule);border-radius:12px;cursor:crosshair;min-height:360px;background:var(--bg)}
+svg text{font-family:"Literata",Georgia,serif;font-size:14px;fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px}
+.chips button{font:600 15px "Literata",Georgia,serif;min-height:44px;padding:6px 14px;border-radius:99px;border:1.5px solid var(--rule);background:var(--bg);color:var(--ink);cursor:pointer}
+.chips button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.codebox{position:relative;margin:10px 0}
+.codebox pre{margin:0;background:var(--code);color:#e6e9ef;border-radius:12px;padding:18px;font:14.5px/1.6 "JetBrains Mono",Consolas,monospace;overflow-x:auto}
+.codebox .copy{position:absolute;top:10px;right:10px;font:600 14px "Literata",serif;min-height:36px;padding:4px 12px;border-radius:8px;border:0;background:#2c3442;color:#fff;cursor:pointer}
+.out{background:var(--panel);border:1px solid var(--rule);border-left:4px solid var(--gr);border-radius:8px;padding:10px 14px;font:14.5px/1.55 "JetBrains Mono",Consolas,monospace;white-space:pre-wrap;overflow-x:auto}
+.k{color:#ff9e64}.s{color:#c3e88d}.cm{color:#8a96a8;font-style:italic}.f{color:#7dcfff}
+ol.steps{padding-left:22px;margin:8px 0}ol.steps li{margin:5px 0}
+.fit{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:12px}
+.fit figure{margin:0;border:1px solid var(--rule);border-radius:12px;padding:12px}
+.fit svg{width:100%;height:auto;display:block}
+.fit figcaption{font-size:15px;margin-top:6px}
+.fit figcaption b{display:block}
+.uses{display:grid;grid-template-columns:repeat(auto-fit,minmax(16em,1fr));gap:16px;margin-top:10px}
+.uses div{border:1px solid var(--rule);border-radius:12px;padding:14px 16px}
+.uses b{display:block;font-size:18px;margin-bottom:4px}
+.uses p{font-size:15.5px;margin:0 0 6px}
+dl.gl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px;margin:0}
+dl.gl div{padding:8px 0;border-bottom:1px solid var(--rule)}
+dl.gl dt{font-weight:700}dl.gl dd{margin:0;font-size:15.5px;color:var(--mute)}
+.alt{background:var(--panel)}
+.callout{border-left:4px solid var(--ca);padding:4px 0 4px 14px;margin:14px 0}
+.quiz{display:grid;gap:14px;margin-top:16px}
+.qz{border:1px solid var(--rule);border-radius:12px;padding:16px 18px;background:var(--bg)}
+.qz legend{font-weight:700;font-size:17.5px;padding:0;margin-bottom:8px;line-height:1.35}
+.qz legend span{color:var(--ca);margin-right:6px}
+.qz label{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1.5px solid var(--rule);border-radius:10px;margin:6px 0;cursor:pointer;font-size:16px;min-height:44px}
+.qz label:hover{border-color:var(--pr)}
+.qz input{margin-top:5px;width:18px;height:18px;accent-color:var(--pr);flex:none}
+.qz label.ok{border-color:var(--gr);background:color-mix(in srgb,var(--gr) 12%,var(--bg))}
+.qz label.bad{border-color:var(--ca);background:var(--cas)}
+.qz .why{display:none;font-size:15px;margin:8px 0 0;padding-left:12px;border-left:3px solid var(--rule);color:var(--mute)}
+.qz.done .why{display:block}
+.qz .mark{font-weight:700;margin-left:8px}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(14em,1fr));gap:12px;margin-top:14px}
+.who label{display:grid;gap:4px;font-size:15.5px;font-weight:600}
+.who input{font:16px "Literata",Georgia,serif;padding:10px 12px;border:1.5px solid var(--rule);border-radius:8px;background:var(--bg);color:var(--ink);min-height:44px}
+.result{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px 28px;align-items:center;margin-top:18px;padding:20px 22px;border-radius:14px;background:var(--panel);border:1px solid var(--rule)}
+.grade{font-size:clamp(56px,8vw,84px);font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.grade.pass{color:var(--pr)}.grade.fail{color:var(--ca)}
+.msg{font-size:15.5px;margin-top:10px;min-height:1.4em}
+@media(max-width:600px){.result{grid-template-columns:minmax(0,1fr)}}
+footer{padding:28px max(5vw,16px);border-top:1px solid var(--rule);font-size:14.5px;color:var(--mute)}
+@media(max-width:900px){.hero,.demo,.grid2{grid-template-columns:minmax(0,1fr)}.grid3,.fit{grid-template-columns:minmax(0,1fr)}dl.gl{grid-template-columns:minmax(0,1fr)}
+.route{grid-template-columns:minmax(0,1fr);gap:14px}.route::before{left:17px;right:auto;top:8px;bottom:8px;width:4px;height:auto}.route li{display:grid;grid-template-columns:38px minmax(0,1fr);gap:0 14px;text-align:left;padding:0}.route .dot{margin:0;grid-row:span 2}}
+@media(max-width:600px){.flow{grid-template-columns:minmax(0,1fr);justify-items:stretch}.arrow{transform:rotate(90deg);justify-self:center}.fig{min-height:320px}
+table{font-size:13.5px}th,td{padding:6px 4px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--rule)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:7.5em}.stack td::before{content:attr(data-l);float:inline-start;width:7em;margin-inline-start:-7.5em;font-weight:700;color:var(--mute)}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+
+<header class="band top" id="inicio">
+  <div class="wrap">
+    <h1>Introducción al Machine Learning</h1>
+    <p class="lede">Lo esencial para empezar: qué es, dónde se ubica dentro de la inteligencia artificial, cómo aprende una máquina a partir de datos, qué modelos existen y cómo se ve uno en Python. Cada concepto tiene una figura que puedes tocar.</p>
+  </div>
+</header>
+
+<nav class="scroll" aria-label="Secciones">
+  <a href="#mapa">IA y ML</a><a href="#que-es">Qué es</a><a href="#ciclo">Ciclo</a><a href="#datos">Datos</a><a href="#tipos">Tipos de aprendizaje</a><a href="#regresion">Regresión</a><a href="#clasificacion">Clasificación</a><a href="#boosting">Boosting</a><a href="#modelos">Modelos</a><a href="#metricas">Evaluar</a><a href="#python">Python</a><a href="#usos">Usos</a><a href="#glosario">Glosario</a><a href="#cuestionario">Cuestionario</a>
+</nav>
+
+<!-- 1 · MAPA -->
+<section class="band" id="mapa">
+  <div class="wrap">
+    <div class="num">1 · Dónde se ubica</div>
+    <h2>El machine learning es una parte de la IA</h2>
+    <p class="lede">La inteligencia artificial es el campo completo. El machine learning es la parte que aprende de datos; el deep learning es un tipo de machine learning, y la IA generativa es un uso del deep learning. Toca cada anillo.</p>
+    <div class="hero" style="margin-top:18px">
+      <div class="fig" id="ringFig"><svg id="rings" role="img" aria-label="Anillos anidados: IA contiene a Machine Learning, que contiene a Deep Learning, que contiene a IA generativa"></svg></div>
+      <div class="panel" id="ringInfo" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · QUE ES -->
+<section class="band alt" id="que-es">
+  <div class="wrap">
+    <div class="num">2 · La idea central</div>
+    <h2>En vez de escribir las reglas, la máquina las aprende de ejemplos</h2>
+    <div class="grid2" style="margin-top:14px">
+      <div>
+        <h3 style="margin-top:0">Programación tradicional</h3>
+        <div class="flow"><div class="box">Datos</div><div class="arrow">+</div><div class="box">Reglas escritas por una persona</div><div class="arrow">→</div><div class="box hl">Respuestas</div></div>
+        <p class="small">Ejemplo: "si el correo contiene la palabra <i>gratis</i>, márcalo como spam". Funciona hasta que los spammers cambian de palabra.</p>
+      </div>
+      <div>
+        <h3 style="margin-top:0">Machine learning</h3>
+        <div class="flow"><div class="box">Datos</div><div class="arrow">+</div><div class="box">Respuestas conocidas</div><div class="arrow">→</div><div class="box hl">Reglas (el modelo)</div></div>
+        <p class="small">Ejemplo: le das miles de correos ya marcados como spam o no spam, y el algoritmo descubre los patrones. Si cambian los correos, se vuelve a entrenar.</p>
+      </div>
+    </div>
+    <div class="callout"><p style="margin:0"><b>Definición de trabajo:</b> el machine learning (aprendizaje automático) es el conjunto de técnicas que permiten a un computador <b>mejorar en una tarea a partir de la experiencia</b>, es decir, de datos, sin que cada regla se programe de forma explícita. El resultado del entrenamiento se llama <b>modelo</b>: una función que recibe datos nuevos y entrega una predicción.</p></div>
+  </div>
+</section>
+
+<!-- 3 · CICLO -->
+<section class="band" id="ciclo">
+  <div class="wrap">
+    <div class="num">3 · Cómo se hace</div>
+    <h2>Un proyecto de ML sigue siempre el mismo recorrido</h2>
+    <p class="lede">El algoritmo es solo una estación. La mayor parte del trabajo está en entender el problema y preparar los datos.</p>
+    <ol class="route">
+      <li><div class="dot">1</div><b>Definir el problema</b><span>¿Qué quiero predecir y para qué decisión?</span></li>
+      <li><div class="dot">2</div><b>Reunir datos</b><span>Registros, sensores, encuestas, bases de datos.</span></li>
+      <li><div class="dot">3</div><b>Preparar</b><span>Limpiar, completar faltantes, transformar variables.</span></li>
+      <li><div class="dot">4</div><b>Entrenar</b><span>El algoritmo ajusta el modelo con los datos de entrenamiento.</span></li>
+      <li><div class="dot">5</div><b>Evaluar</b><span>Medir el error con datos que el modelo nunca vio.</span></li>
+      <li><div class="dot">6</div><b>Usar y vigilar</b><span>Poner en producción y reentrenar si los datos cambian.</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 4 · DATOS -->
+<section class="band alt" id="datos">
+  <div class="wrap">
+    <div class="num">4 · La materia prima</div>
+    <h2>Tipos de datos: cada columna es una pregunta distinta</h2>
+    <p class="lede">Un conjunto de datos (dataset) es una tabla: cada fila es un ejemplo y cada columna una variable. Las variables de entrada se llaman <b>características</b> (features) y la que queremos predecir, <b>etiqueta</b> u objetivo. Toca los encabezados.</p>
+    <div class="grid2" style="margin-top:14px;align-items:start">
+      <div>
+        <div class="scroll"><table class="data" id="dataTbl">
+          <thead><tr>
+            <th data-c="0">id</th><th data-c="1">edad</th><th data-c="2">plan</th><th data-c="3">meses</th><th data-c="4">satisfacción</th><th data-c="5">gasto ($)</th><th data-c="6" class="lab">abandona</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>C-101</td><td>34</td><td>Plus</td><td>26</td><td>alta</td><td>18 990</td><td class="lab">no</td></tr>
+            <tr><td>C-102</td><td>22</td><td>Básico</td><td>3</td><td>baja</td><td>9 990</td><td class="lab">sí</td></tr>
+            <tr><td>C-103</td><td>47</td><td>Pro</td><td>51</td><td>media</td><td>29 990</td><td class="lab">no</td></tr>
+            <tr><td>C-104</td><td>29</td><td>Básico</td><td>7</td><td>media</td><td>9 990</td><td class="lab">sí</td></tr>
+            <tr><td>C-105</td><td>58</td><td>Plus</td><td>40</td><td>alta</td><td>18 990</td><td class="lab">no</td></tr>
+          </tbody>
+        </table></div>
+        <p class="small">Datos de ejemplo: clientes de una empresa de telecomunicaciones.</p>
+        <h3>Separar para evaluar con honestidad</h3>
+        <div class="split" aria-label="80 por ciento entrenamiento, 20 por ciento prueba"><div style="flex:80;background:var(--pr)">Entrenamiento 80 %</div><div style="flex:20;background:var(--ca)">Prueba 20 %</div></div>
+        <p class="small">El modelo aprende solo con la parte de entrenamiento. La parte de prueba se guarda para medir cómo le iría con datos nuevos.</p>
+      </div>
+      <div class="panel" id="colInfo" aria-live="polite"></div>
+    </div>
+    <h3>Los grandes tipos de datos</h3>
+    <div class="types">
+      <div><b>Numéricos continuos</b><span>Cualquier valor en un rango: temperatura, precio, voltaje.</span></div>
+      <div><b>Numéricos discretos</b><span>Conteos enteros: número de llamadas, hijos, fallas.</span></div>
+      <div><b>Categóricos nominales</b><span>Grupos sin orden: color, comuna, plan contratado.</span></div>
+      <div><b>Categóricos ordinales</b><span>Grupos con orden: bajo, medio, alto; nivel educacional.</span></div>
+      <div><b>Binarios</b><span>Dos valores: sí/no, falla/no falla, spam/no spam.</span></div>
+      <div><b>Series de tiempo</b><span>Valores medidos en el tiempo: consumo eléctrico por hora.</span></div>
+      <div class="u"><b>Texto</b><span>Correos, reseñas, documentos. No estructurado.</span></div>
+      <div class="u"><b>Imágenes y video</b><span>Matrices de píxeles. No estructurado.</span></div>
+      <div class="u"><b>Audio y señales</b><span>Ondas muestreadas en el tiempo. No estructurado.</span></div>
+    </div>
+    <p class="small" style="margin-top:12px">Azul: datos <b>estructurados</b> (caben en una tabla). Ocre: datos <b>no estructurados</b>, que suelen requerir deep learning o una transformación previa.</p>
+  </div>
+</section>
+
+<!-- 5 · TIPOS -->
+<section class="band" id="tipos">
+  <div class="wrap">
+    <div class="num">5 · Las tres formas de aprender</div>
+    <h2>Supervisado, no supervisado y por refuerzo</h2>
+    <p class="lede">La diferencia está en qué información recibe el algoritmo mientras aprende.</p>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-t="sup" id="t-sup">Supervisado</button>
+      <button role="tab" aria-selected="false" data-t="uns" id="t-uns">No supervisado</button>
+      <button role="tab" aria-selected="false" data-t="rl" id="t-rl">Por refuerzo</button>
+    </div>
+
+    <div class="demo" data-p="sup">
+      <div class="fig" id="supFig" style="cursor:default"><svg id="supSvg" role="img" aria-label="Puntos etiquetados en dos clases separados por una frontera"></svg></div>
+      <div>
+        <h3 style="margin-top:0">Aprende con un profesor</h3>
+        <p>Cada ejemplo viene con su <b>respuesta correcta</b> (la etiqueta). El modelo aprende la relación entre las características y la etiqueta, y luego predice la etiqueta de ejemplos nuevos.</p>
+        <p><span class="tag">Regresión</span> la etiqueta es un número: precio, temperatura, demanda.</p>
+        <p><span class="tag c">Clasificación</span> la etiqueta es una categoría: spam o no, enfermo o sano, especie.</p>
+        <p class="small">En la figura, cada punto es un estudiante (horas de estudio y asistencia) con su resultado conocido. La línea es lo que el modelo aprendió; el punto con "?" es un estudiante nuevo.</p>
+      </div>
+    </div>
+
+    <div class="demo" data-p="uns" hidden>
+      <div class="fig" id="kmFig" style="cursor:default"><svg id="kmSvg" role="img" aria-label="Agrupamiento k-means paso a paso"></svg></div>
+      <div>
+        <h3 style="margin-top:0">Encuentra estructura sin respuestas</h3>
+        <p>Los datos <b>no tienen etiqueta</b>. El algoritmo busca grupos, patrones o datos raros por sí solo.</p>
+        <p>Aquí, <b>k-means</b> agrupa puntos: elige k centros, asigna cada punto al centro más cercano y mueve cada centro al promedio de su grupo. Repite hasta que nada cambia.</p>
+        <div class="ctrl">
+          <button class="btn p" id="kmStep">Siguiente paso</button>
+          <button class="btn" id="kmRun">Hasta converger</button>
+          <label>k <select id="kmK"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
+          <button class="btn" id="kmReset">Nuevos centros</button>
+        </div>
+        <div class="stat"><div><b id="kmIt">0</b><span>iteraciones</span></div><div><b id="kmIn">—</b><span>inercia (menor es mejor)</span></div></div>
+        <p class="small" id="kmMsg">Los centros (cruces) parten en posiciones al azar.</p>
+      </div>
+    </div>
+
+    <div class="demo" data-p="rl" hidden>
+      <div class="fig" id="rlFig" style="cursor:default"><svg id="rlSvg" role="img" aria-label="Agente en una cuadrícula aprendiendo a llegar a la meta"></svg></div>
+      <div>
+        <h3 style="margin-top:0">Aprende por prueba y error</h3>
+        <p>Un <b>agente</b> actúa en un <b>entorno</b> y recibe <b>recompensas</b> o castigos. Nadie le dice la acción correcta: aprende qué acciones convienen a largo plazo.</p>
+        <p>El robot debe llegar a la meta (+10) sin caer en los pozos (−10); cada paso cuesta −1. Usa <b>Q-learning</b>: las flechas muestran lo que aprendió en cada casilla.</p>
+        <div class="ctrl">
+          <button class="btn p" id="rl1">Jugar 1 episodio</button>
+          <button class="btn" id="rl50">Entrenar 50</button>
+          <button class="btn" id="rlReset">Olvidar todo</button>
+        </div>
+        <div class="stat"><div><b id="rlEp">0</b><span>episodios</span></div><div><b id="rlR">—</b><span>recompensa del último</span></div></div>
+        <p class="small" id="rlMsg">Sin entrenamiento, el robot se mueve al azar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · REGRESION -->
+<section class="band alt" id="regresion">
+  <div class="wrap">
+    <div class="num">6 · Predecir un número</div>
+    <h2>Regresión: una recta que resume la tendencia</h2>
+    <p class="lede">La regresión lineal busca la recta que deja el menor error cuadrático entre los puntos y la predicción. Haz clic en el gráfico para agregar departamentos y mira cómo cambia.</p>
+    <div class="demo" style="margin-top:14px">
+      <div class="fig" id="regFig"><svg id="regSvg" role="img" aria-label="Diagrama de dispersión de superficie y precio con recta de regresión"></svg></div>
+      <div class="panel">
+        <div class="small">Modelo aprendido</div>
+        <div style="font-size:clamp(20px,2.2vw,26px);font-weight:700;margin:4px 0 8px" id="regEq">—</div>
+        <div class="stat"><div><b id="regR2">—</b><span>R² (1 = perfecto)</span></div><div><b id="regMae">—</b><span>error medio (UF)</span></div><div><b id="regN">—</b><span>ejemplos</span></div></div>
+        <div class="ctrl"><label for="regX">Predecir para</label><input type="number" id="regX" value="90" min="20" max="200"><span>m² →</span><b id="regY" style="white-space:nowrap">—</b></div>
+        <div class="ctrl"><button class="btn" id="regReset">Restaurar ejemplo</button><button class="btn" id="regClear">Borrar puntos</button></div>
+        <p class="small" style="margin-top:12px">Las líneas finas son los <b>residuos</b>: la distancia entre cada valor real y la predicción. Datos de ejemplo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · CLASIFICACION -->
+<section class="band" id="clasificacion">
+  <div class="wrap">
+    <div class="num">7 · Predecir una categoría</div>
+    <h2>Clasificación: dibujar una frontera entre clases</h2>
+    <p class="lede">Un clasificador divide el espacio en zonas, una por clase. Este usa <b>k vecinos más cercanos</b> (k-NN): cada punto nuevo toma la clase que tienen la mayoría de sus k vecinos. Agrega estudiantes y cambia k.</p>
+    <div class="demo" style="margin-top:14px">
+      <div class="fig" id="knnFig"><svg id="knnSvg" role="img" aria-label="Mapa de clasificación k vecinos"></svg></div>
+      <div class="panel">
+        <div class="ctrl" style="margin-top:0">
+          <label for="knnK">k = <b id="knnKv">5</b></label><input type="range" id="knnK" min="1" max="15" step="2" value="5">
+        </div>
+        <div class="ctrl"><span>Al hacer clic agregas:</span>
+          <div class="chips" style="margin:0" id="knnCls"><button aria-pressed="true" data-c="0">Aprueba</button><button aria-pressed="false" data-c="1">Reprueba</button></div>
+        </div>
+        <div class="stat"><div><b id="knnAcc">—</b><span>exactitud en entrenamiento</span></div><div><b id="knnN">—</b><span>ejemplos</span></div></div>
+        <div class="ctrl"><button class="btn" id="knnReset">Restaurar ejemplo</button></div>
+        <p class="small" style="margin-top:12px">Con <b>k = 1</b> la frontera rodea cada punto y acierta el 100 % en entrenamiento, pero memoriza el ruido: eso es <b>sobreajuste</b>. Con k más grande la frontera se suaviza.</p>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:22px">
+      <div><h3>Clasificación binaria</h3><p>Dos clases: fraude o no, falla o no, aprueba o reprueba. Modelos típicos: regresión logística, árboles, boosting.</p></div>
+      <div><h3>Clasificación multiclase</h3><p>Tres o más clases: especie de una flor, dígito escrito a mano, tipo de ataque en una red.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · BOOSTING -->
+<section class="band alt" id="boosting">
+  <div class="wrap">
+    <div class="num">8 · Muchos modelos simples, uno fuerte</div>
+    <h2>Boosting: cada árbol corrige los errores del anterior</h2>
+    <p class="lede">Un árbol muy pequeño (un "tocón", con una sola pregunta) es un modelo débil. El <b>gradient boosting</b> los suma en secuencia: cada nuevo árbol se entrena con los <b>residuos</b> que dejaron los anteriores. Mueve el control.</p>
+    <div class="demo" style="margin-top:14px">
+      <div>
+        <div class="fig" id="boFig" style="cursor:default"><svg id="boSvg" role="img" aria-label="Predicción del boosting sobre datos con forma de onda"></svg></div>
+        <div class="fig" id="boErrFig" style="cursor:default;min-height:190px;margin-top:12px"><svg id="boErr" role="img" aria-label="Error de entrenamiento y de prueba según número de árboles"></svg></div>
+      </div>
+      <div class="panel">
+        <div class="ctrl" style="margin-top:0"><label for="boM">Árboles: <b id="boMv">1</b></label><input type="range" id="boM" min="0" max="200" value="1"></div>
+        <div class="ctrl"><button class="btn" id="boPlay">Animar</button></div>
+        <div class="stat"><div><b id="boTr">—</b><span>error entrenamiento (ECM)</span></div><div><b id="boTe">—</b><span>error prueba (ECM)</span></div></div>
+        <p class="small" id="boMsg"></p>
+        <p class="small">Puntos llenos: entrenamiento. Puntos huecos: prueba. Tasa de aprendizaje 0,5. Abajo, el error de prueba deja de bajar en algún momento: agregar más árboles ya no ayuda y puede empezar a sobreajustar.</p>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:22px">
+      <div class="panel"><h3 style="margin-top:0">Bagging (ej. Random Forest)</h3><p style="margin:0">Entrena muchos árboles <b>en paralelo</b>, cada uno con una muestra distinta de los datos, y promedia o vota. Reduce la variabilidad. Robusto y fácil de usar.</p></div>
+      <div class="panel"><h3 style="margin-top:0">Boosting (ej. XGBoost, LightGBM)</h3><p style="margin:0">Entrena árboles <b>en secuencia</b>, cada uno enfocado en lo que el conjunto aún hace mal. Suele lograr la mejor precisión en datos tabulares, pero hay que cuidar el sobreajuste.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · MODELOS -->
+<section class="band" id="modelos">
+  <div class="wrap">
+    <div class="num">9 · El catálogo básico</div>
+    <h2>Los modelos más usados y para qué sirve cada uno</h2>
+    <div class="chips" id="modChips">
+      <button aria-pressed="true" data-f="all">Todos</button><button aria-pressed="false" data-f="reg">Regresión</button><button aria-pressed="false" data-f="clas">Clasificación</button><button aria-pressed="false" data-f="uns">No supervisado</button><button aria-pressed="false" data-f="rl">Refuerzo</button>
+    </div>
+    <div class="scroll"><table class="stack" id="modTbl">
+      <thead><tr><th>Modelo</th><th>Aprendizaje</th><th>Tarea</th><th>Cómo funciona</th><th>Cuándo usarlo</th><th>Ejemplo</th></tr></thead>
+      <tbody id="modBody"></tbody>
+    </table></div>
+    <p class="small" style="margin-top:10px">Regla práctica: empieza con un modelo simple (regresión lineal o logística, un árbol) como línea base; luego prueba Random Forest o boosting y compara con la misma métrica.</p>
+  </div>
+</section>
+
+<!-- 10 · METRICAS -->
+<section class="band alt" id="metricas">
+  <div class="wrap">
+    <div class="num">10 · ¿Funciona?</div>
+    <h2>Evaluar: medir con datos que el modelo no vio</h2>
+    <div class="fit">
+      <figure><svg viewBox="0 0 200 120" aria-hidden="true"><g id="fitU"></g></svg><figcaption><b>Subajuste</b>Modelo demasiado simple: falla en entrenamiento y en prueba.</figcaption></figure>
+      <figure><svg viewBox="0 0 200 120" aria-hidden="true"><g id="fitG"></g></svg><figcaption><b>Buen ajuste</b>Captura la tendencia sin perseguir cada punto.</figcaption></figure>
+      <figure><svg viewBox="0 0 200 120" aria-hidden="true"><g id="fitO"></g></svg><figcaption><b>Sobreajuste</b>Memoriza el ruido: perfecto en entrenamiento, malo en prueba.</figcaption></figure>
+    </div>
+    <div class="grid2" style="margin-top:22px">
+      <div>
+        <h3>Métricas de regresión</h3>
+        <div class="scroll"><table class="stack"><thead><tr><th>Métrica</th><th>Qué mide</th></tr></thead><tbody>
+          <tr><td><b>MAE</b></td><td>Error absoluto medio, en las mismas unidades que la etiqueta.</td></tr>
+          <tr><td><b>RMSE</b></td><td>Raíz del error cuadrático medio; castiga más los errores grandes.</td></tr>
+          <tr><td><b>R²</b></td><td>Proporción de la variación explicada; 1 es perfecto, 0 es igual a predecir el promedio.</td></tr>
+        </tbody></table></div>
+      </div>
+      <div>
+        <h3>Métricas de clasificación</h3>
+        <div class="scroll"><table class="stack"><thead><tr><th>Métrica</th><th>Qué mide</th></tr></thead><tbody>
+          <tr><td><b>Exactitud</b></td><td>Porcentaje de aciertos. Engaña si una clase es muy rara.</td></tr>
+          <tr><td><b>Precisión</b></td><td>De lo que el modelo marcó como positivo, cuánto lo era.</td></tr>
+          <tr><td><b>Recall</b></td><td>De los positivos reales, cuántos encontró (sensibilidad).</td></tr>
+          <tr><td><b>F1</b></td><td>Equilibrio entre precisión y recall.</td></tr>
+          <tr><td><b>Matriz de confusión</b></td><td>Tabla de aciertos y errores por clase.</td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+    <div class="callout"><p style="margin:0"><b>Ejemplo:</b> si solo el 1 % de las transacciones es fraude, un modelo que siempre dice "no es fraude" tiene 99 % de exactitud y 0 % de recall. Por eso la métrica se elige según el problema.</p></div>
+  </div>
+</section>
+
+<!-- 11 · PYTHON -->
+<section class="band" id="python">
+  <div class="wrap">
+    <div class="num">11 · Manos a la obra</div>
+    <h2>Así se ve un modelo pequeño en Python</h2>
+    <p class="lede">Con la biblioteca <b>scikit-learn</b> casi todos los modelos siguen el mismo patrón: crear, <code>fit</code> (entrenar), <code>predict</code> (predecir) y evaluar. Instálala con <code>pip install scikit-learn</code>.</p>
+    <div class="tabs" role="tablist" id="pyTabs">
+      <button role="tab" aria-selected="true" data-py="0">Clasificación</button>
+      <button role="tab" aria-selected="false" data-py="1">Regresión</button>
+      <button role="tab" aria-selected="false" data-py="2">Agrupamiento</button>
+    </div>
+    <div class="demo" style="align-items:start">
+      <div>
+        <div class="codebox"><pre id="pyCode"></pre><button class="copy" id="pyCopy">Copiar</button></div>
+        <div class="small" style="margin:12px 0 4px">Resultado al ejecutarlo (scikit-learn 1.9):</div>
+        <div class="out" id="pyOut"></div>
+      </div>
+      <div class="panel"><h3 style="margin-top:0" id="pyTitle"></h3><ol class="steps" id="pySteps"></ol></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 · USOS -->
+<section class="band alt" id="usos">
+  <div class="wrap">
+    <div class="num">12 · Dónde se usa</div>
+    <h2>Aplicaciones por área</h2>
+    <div class="uses">
+      <div><b>Salud</b><p>Apoyo al diagnóstico por imágenes, predicción de reingresos hospitalarios.</p><span class="tag c">Clasificación</span><span class="tag">Deep learning</span></div>
+      <div><b>Agricultura</b><p>Estimar rendimiento de cosechas, recomendar dosis de fertilizante según suelo y clima.</p><span class="tag">Regresión</span></div>
+      <div><b>Finanzas</b><p>Detección de fraude en tarjetas, evaluación de riesgo de crédito.</p><span class="tag c">Clasificación</span><span class="tag">Boosting</span></div>
+      <div><b>Telecomunicaciones</b><p>Predecir abandono de clientes, anticipar fallas en la red, optimizar antenas.</p><span class="tag c">Clasificación</span><span class="tag">Series de tiempo</span></div>
+      <div><b>Ciberseguridad</b><p>Detectar tráfico anómalo e intrusiones, clasificar malware y correos de phishing.</p><span class="tag">No supervisado</span><span class="tag c">Clasificación</span></div>
+      <div><b>Industria</b><p>Mantenimiento predictivo con sensores, control de calidad con visión artificial.</p><span class="tag">Regresión</span><span class="tag">Deep learning</span></div>
+      <div><b>Comercio</b><p>Sistemas de recomendación, segmentación de clientes, pronóstico de demanda.</p><span class="tag">Agrupamiento</span><span class="tag">Regresión</span></div>
+      <div><b>Transporte y robótica</b><p>Rutas óptimas, vehículos y robots que aprenden a moverse.</p><span class="tag">Refuerzo</span></div>
+      <div><b>Educación</b><p>Detectar estudiantes en riesgo de desertar, adaptar ejercicios al nivel de cada uno.</p><span class="tag c">Clasificación</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 · GLOSARIO -->
+<section class="band" id="glosario">
+  <div class="wrap">
+    <div class="num">13 · Para no perderse</div>
+    <h2>Glosario y próximos pasos</h2>
+    <dl class="gl">
+      <div><dt>Dataset</dt><dd>Conjunto de datos: filas (ejemplos) y columnas (variables).</dd></div>
+      <div><dt>Característica (feature)</dt><dd>Variable de entrada que usa el modelo.</dd></div>
+      <div><dt>Etiqueta (target)</dt><dd>Lo que se quiere predecir.</dd></div>
+      <div><dt>Entrenamiento</dt><dd>Proceso en que el algoritmo ajusta el modelo a los datos.</dd></div>
+      <div><dt>Inferencia</dt><dd>Usar el modelo ya entrenado para predecir con datos nuevos.</dd></div>
+      <div><dt>Hiperparámetro</dt><dd>Ajuste que se elige antes de entrenar: k en k-NN, profundidad de un árbol, número de árboles.</dd></div>
+      <div><dt>Sobreajuste</dt><dd>El modelo memoriza los datos de entrenamiento y generaliza mal.</dd></div>
+      <div><dt>Validación cruzada</dt><dd>Repetir la división entrenamiento/prueba varias veces para una evaluación más estable.</dd></div>
+      <div><dt>Ingeniería de características</dt><dd>Crear o transformar variables para que el modelo aprenda mejor.</dd></div>
+      <div><dt>Sesgo en los datos</dt><dd>Si los datos no representan bien la realidad, el modelo repetirá ese error.</dd></div>
+    </dl>
+    <h3 style="margin-top:28px">Para seguir aprendiendo</h3>
+    <ul>
+      <li><a href="https://scikit-learn.org/stable/user_guide.html">Guía de usuario de scikit-learn</a>: cada modelo explicado con ejemplos.</li>
+      <li><a href="https://www.kaggle.com/learn">Kaggle Learn</a>: cursos cortos gratuitos con notebooks listos para ejecutar.</li>
+      <li><a href="https://developers.google.com/machine-learning/crash-course">Machine Learning Crash Course de Google</a>: curso introductorio gratuito.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 14 · CUESTIONARIO -->
+<section class="band alt" id="cuestionario">
+  <div class="wrap">
+    <div class="num">14 · Comprueba lo aprendido</div>
+    <h2>Cuestionario final</h2>
+    <p class="lede">Diez preguntas de selección múltiple. Al terminar, presiona <b>Revisar</b>: verás tu nota y la explicación de cada respuesta, y podrás descargar un PDF con la corrección.</p>
+    <div class="who">
+      <label for="qName">Nombre y apellido<input type="text" id="qName" autocomplete="name" placeholder="Ej.: Camila Rojas"></label>
+      <label for="qCourse">Curso o sección (opcional)<input type="text" id="qCourse" placeholder="Ej.: Ing. Elect. Aut."></label>
+    </div>
+    <form id="quiz" class="quiz" novalidate></form>
+    <div class="ctrl" style="margin-top:16px">
+      <button class="btn p" id="qCheck" type="button">Revisar</button>
+      <button class="btn" id="qRetry" type="button" hidden>Intentar de nuevo</button>
+    </div>
+    <div class="msg" id="qMsg" aria-live="polite"></div>
+    <div class="result" id="qResult" hidden>
+      <div><div class="small">Nota</div><div class="grade" id="qGrade">—</div></div>
+      <div>
+        <div style="font-size:20px;font-weight:700" id="qScore"></div>
+        <p class="small" style="margin:4px 0 10px">Escala de 1,0 a 7,0 con 60 % de exigencia: 6 respuestas correctas equivalen a un 4,0.</p>
+        <button class="btn p" id="qPdf" type="button">Descargar PDF revisado</button>
+        <div class="msg" id="qPdfMsg" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>Introducción al Machine Learning · Material de estudio. Los datos de las figuras son de ejemplo; los resultados de Python provienen de ejecutar el código mostrado.</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+{
+const $ = id => document.getElementById(id);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NS = 'http://www.w3.org/2000/svg';
+const watch = (el, fn) => { const ro = new ResizeObserver(fn); ro.observe(el); return ro; };
+let seed = 7;
+const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+const gauss = () => { const u = rnd() || 1e-9, v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+const fmt = (x, d = 0) => x.toLocaleString('es-CL', {minimumFractionDigits: d, maximumFractionDigits: d});
+
+/* ---------- 1 · anillos ---------- */
+const RINGS = [
+  {n: 'Inteligencia artificial', s: 'IA', r: 1, t: 'El campo completo: sistemas que realizan tareas que normalmente requieren inteligencia humana, como razonar, planificar, percibir o comunicarse. Incluye enfoques que no aprenden de datos, como los sistemas basados en reglas escritas a mano.', e: ['Sistemas expertos con reglas "si… entonces"', 'Búsqueda de rutas (GPS)', 'Motores de ajedrez clásicos']},
+  {n: 'Machine learning', s: 'ML', r: .76, t: 'La parte de la IA en que el sistema aprende patrones a partir de datos, en lugar de seguir reglas programadas una por una. Es el tema de esta página.', e: ['Filtro de spam', 'Predicción de demanda o de precios', 'Detección de fraude', 'Segmentación de clientes']},
+  {n: 'Deep learning', s: 'DL', r: .52, t: 'Machine learning con redes neuronales de muchas capas. Necesita muchos datos y capacidad de cómputo, y destaca con datos no estructurados: imágenes, audio y texto.', e: ['Reconocimiento de rostros y objetos', 'Voz a texto', 'Traducción automática']},
+  {n: 'IA generativa', s: 'IA gen.', r: .29, t: 'Modelos de deep learning entrenados para generar contenido nuevo: texto, imágenes, audio o código. Los grandes modelos de lenguaje pertenecen a este anillo.', e: ['Asistentes conversacionales', 'Generación de imágenes', 'Asistentes de programación']}
+];
+let ringSel = 1;
+function drawRings() {
+  const s = $('rings'), W = s.clientWidth, H = s.clientHeight; if (!W) return;
+  const R = Math.min(W / 2 - 6, (H - 8) / 2), cx = W / 2, bot = H - 4;
+  const fills = ['--prs', '--prs', '--prs', '--prs'];
+  s.innerHTML = RINGS.map((g, i) => {
+    const r = g.r * R, cy = bot - r, on = i === ringSel;
+    const fill = `color-mix(in srgb, var(--pr) ${10 + i * 14}%, var(--bg))`;
+    const ty = i < 3 ? bot - 2 * r + 26 : cy + 5;
+    const label = (i < 3 || r > 60) ? `<text x="${cx}" y="${ty}" text-anchor="middle" font-weight="700" style="font-size:${i ? 15 : 16}px">${R < 170 ? g.s : g.n}</text>` : `<text x="${cx}" y="${ty}" text-anchor="middle" font-weight="700">${g.s}</text>`;
+    return `<g data-i="${i}" style="cursor:pointer" tabindex="0" role="button" aria-label="${g.n}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="${on ? 'var(--ca)' : 'var(--pr)'}" stroke-width="${on ? 4 : 1.5}"/>${label}</g>`;
+  }).join('');
+  s.querySelectorAll('g').forEach(g => {
+    const pick = () => { ringSel = +g.dataset.i; drawRings(); ringInfo(); };
+    g.addEventListener('click', pick);
+    g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+  });
+}
+function ringInfo() {
+  const g = RINGS[ringSel];
+  const path = RINGS.slice(0, ringSel + 1).map(x => x.n).join(' › ');
+  $('ringInfo').innerHTML = `<div class="small">${path}</div><h3 style="margin:6px 0 10px;font-size:26px">${g.n}</h3><p>${g.t}</p><div class="small" style="margin-top:8px">Ejemplos</div><ul style="margin:6px 0 0;padding-left:20px">${g.e.map(x => `<li>${x}</li>`).join('')}</ul>`;
+}
+watch($('rings'), drawRings); ringInfo();
+
+/* ---------- 4 · columnas del dataset ---------- */
+const COLS = [
+  ['id', 'Identificador', 'No es una característica: solo distingue a cada cliente. Si se usa para entrenar, el modelo aprende patrones sin sentido.', 'Se elimina antes de entrenar.'],
+  ['edad', 'Numérico discreto', 'Un número entero con sentido de magnitud: 47 es mayor que 22.', 'Se usa directo; a veces se escala.'],
+  ['plan', 'Categórico nominal', 'Grupos sin orden natural: Básico, Plus y Pro son etiquetas, no números.', 'Se transforma con one-hot: una columna 0/1 por cada plan.'],
+  ['meses', 'Numérico discreto', 'Antigüedad del cliente en meses: un conteo entero.', 'Se usa directo.'],
+  ['satisfacción', 'Categórico ordinal', 'Categorías con orden: baja < media < alta.', 'Se codifica respetando el orden: 0, 1, 2.'],
+  ['gasto', 'Numérico continuo', 'Monto en pesos que puede tomar muchos valores.', 'Se usa directo; conviene escalarlo para k-NN o redes neuronales.'],
+  ['abandona', 'Etiqueta (binaria)', 'Es lo que queremos predecir. Como tiene dos categorías, el problema es de <b>clasificación</b>. Si quisiéramos predecir el gasto, sería <b>regresión</b>.', 'El modelo aprende a estimarla a partir de las otras columnas.']
+];
+function colInfo(i) {
+  const c = COLS[i];
+  document.querySelectorAll('#dataTbl th').forEach(th => th.classList.toggle('on', +th.dataset.c === i));
+  $('colInfo').innerHTML = `<div class="small">Columna</div><h3 style="margin:4px 0 6px;font-size:26px">${c[0]}</h3><span class="tag ${i === 6 ? 'c' : ''}">${c[1]}</span><p style="margin-top:10px">${c[2]}</p><p class="small" style="margin:0"><b>Preparación:</b> ${c[3]}</p>`;
+}
+document.querySelectorAll('#dataTbl th').forEach(th => th.addEventListener('click', () => colInfo(+th.dataset.c)));
+colInfo(2);
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('#tipos [role=tab]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#tipos [role=tab]').forEach(x => x.setAttribute('aria-selected', x === b));
+  document.querySelectorAll('#tipos [data-p]').forEach(p => p.hidden = p.dataset.p !== b.dataset.t);
+}));
+
+/* helpers de ejes */
+function axes(W, H, m, xr, yr, xl, yl, xt, yt) {
+  const X = v => m.l + (v - xr[0]) / (xr[1] - xr[0]) * (W - m.l - m.r);
+  const Y = v => H - m.b - (v - yr[0]) / (yr[1] - yr[0]) * (H - m.t - m.b);
+  let g = `<line x1="${m.l}" y1="${H - m.b}" x2="${W - m.r}" y2="${H - m.b}" stroke="var(--ink)"/><line x1="${m.l}" y1="${m.t}" x2="${m.l}" y2="${H - m.b}" stroke="var(--ink)"/>`;
+  const step = W < 520 ? 2 : 1;
+  (xt || []).forEach((v, k) => { if (k % step) return; g += `<line x1="${X(v)}" y1="${H - m.b}" x2="${X(v)}" y2="${H - m.b + 5}" stroke="var(--ink)"/><text x="${X(v)}" y="${H - m.b + 20}" text-anchor="middle">${v}</text>`; });
+  (yt || []).forEach(v => { g += `<line x1="${m.l}" y1="${Y(v)}" x2="${W - m.r}" y2="${Y(v)}" stroke="var(--rule)"/><text x="${m.l - 8}" y="${Y(v) + 5}" text-anchor="end">${typeof v === 'number' && v >= 1000 ? fmt(v) : v}</text>`; });
+  g += `<text x="${(m.l + W - m.r) / 2}" y="${H - 6}" text-anchor="middle" fill="var(--mute)">${xl}</text>`;
+  g += `<text x="${14}" y="${m.t - 10}" fill="var(--mute)">${yl}</text>`;
+  return {g, X, Y};
+}
+
+/* ---------- datos de estudiantes (supervisado y k-NN) ---------- */
+function students() {
+  seed = 11; const pts = [];
+  for (let k = 0; k < 46; k++) {
+    const h = rnd(), a = rnd();
+    const score = h * .9 + a * 1.1 + gauss() * .14;
+    pts.push({x: h, y: a, c: score > 1 ? 0 : 1});
+  }
+  return pts;
+}
+
+/* ---------- 5a · supervisado ---------- */
+function drawSup() {
+  const s = $('supSvg'), W = s.clientWidth, H = s.clientHeight; if (!W) return;
+  const m = {l: 46, r: 16, t: 30, b: 42};
+  const A = axes(W, H, m, [0, 1], [0, 1], 'Horas de estudio →', 'Asistencia ↑', [], []);
+  const pts = students();
+  let g = A.g;
+  // frontera: .9h + 1.1a = 1  -> a = (1 - .9h)/1.1
+  g += `<line x1="${A.X(0)}" y1="${A.Y(1 / 1.1)}" x2="${A.X(1)}" y2="${A.Y(.1 / 1.1)}" stroke="var(--ink)" stroke-width="2.5" stroke-dasharray="7 5"/>`;
+  pts.forEach(p => { g += p.c ? `<rect x="${A.X(p.x) - 5}" y="${A.Y(p.y) - 5}" width="10" height="10" fill="var(--ca)"/>` : `<circle cx="${A.X(p.x)}" cy="${A.Y(p.y)}" r="6" fill="var(--pr)"/>`; });
+  const nx = A.X(.72), ny = A.Y(.62);
+  g += `<circle cx="${nx}" cy="${ny}" r="12" fill="var(--bg)" stroke="var(--ink)" stroke-width="2.5"/><text x="${nx}" y="${ny + 5}" text-anchor="middle" font-weight="700">?</text>`;
+  g += `<line x1="${nx + 14}" y1="${ny - 8}" x2="${nx + 34}" y2="${ny - 26}" stroke="var(--ink)"/><text x="${nx + 36}" y="${ny - 30}" ${nx > W - 170 ? 'text-anchor="end"' : ''}>predicción: aprueba</text>`;
+  g += `<circle cx="${W - 150}" cy="${m.t - 14}" r="6" fill="var(--pr)"/><text x="${W - 140}" y="${m.t - 9}">Aprueba</text><rect x="${W - 70}" y="${m.t - 19}" width="10" height="10" fill="var(--ca)"/><text x="${W - 56}" y="${m.t - 9}">Reprueba</text>`;
+  s.innerHTML = g;
+}
+watch($('supSvg'), drawSup);
+
+/* ---------- 5b · k-means ---------- */
+const KCOL = ['var(--pr)', 'var(--ca)', 'var(--oc)', 'var(--gr)', 'var(--vi)'];
+const km = {pts: [], c: [], a: null, it: 0, phase: 'assign', done: false};
+function kmData() {
+  seed = 23; km.pts = [];
+  [[.25, .7], [.72, .75], [.5, .25], [.82, .3]].forEach(([cx, cy], j) => {
+    for (let k = 0; k < (j === 3 ? 18 : 30); k++) km.pts.push({x: cx + gauss() * .08, y: cy + gauss() * .08});
+  });
+}
+function kmReset() {
+  const k = +$('kmK').value;
+  km.c = Array.from({length: k}, () => ({x: .1 + Math.random() * .8, y: .1 + Math.random() * .8}));
+  km.a = null; km.it = 0; km.phase = 'assign'; km.done = false;
+  $('kmIt').textContent = '0'; $('kmIn').textContent = '—';
+  $('kmMsg').textContent = 'Los centros (cruces) parten en posiciones al azar.'; drawKm();
+}
+function kmStep() {
+  if (km.done) return;
+  if (km.phase === 'assign') {
+    const old = km.a ? km.a.join() : '';
+    km.a = km.pts.map(p => { let b = 0, bd = 9; km.c.forEach((c, j) => { const d = (p.x - c.x) ** 2 + (p.y - c.y) ** 2; if (d < bd) { bd = d; b = j; } }); return b; });
+    if (old === km.a.join()) { km.done = true; $('kmMsg').textContent = '¡Convergió! Ningún punto cambió de grupo.'; drawKm(); return; }
+    km.phase = 'update'; $('kmMsg').textContent = 'Paso de asignación: cada punto toma el color del centro más cercano.';
+  } else {
+    km.c = km.c.map((c, j) => { const g = km.pts.filter((_, i) => km.a[i] === j); return g.length ? {x: g.reduce((s, p) => s + p.x, 0) / g.length, y: g.reduce((s, p) => s + p.y, 0) / g.length} : c; });
+    km.phase = 'assign'; km.it++; $('kmIt').textContent = km.it;
+    $('kmMsg').textContent = 'Paso de actualización: cada centro se mueve al promedio de sus puntos.';
+  }
+  if (km.a) { const inr = km.pts.reduce((s, p, i) => s + (p.x - km.c[km.a[i]].x) ** 2 + (p.y - km.c[km.a[i]].y) ** 2, 0); $('kmIn').textContent = fmt(inr, 2); }
+  drawKm();
+}
+function drawKm() {
+  const s = $('kmSvg'), W = s.clientWidth, H = s.clientHeight; if (!W) return;
+  const p = 18, X = v => p + v * (W - 2 * p), Y = v => H - p - v * (H - 2 * p);
+  let g = `<rect x="1" y="1" width="${W - 2}" height="${H - 2}" fill="none" stroke="var(--rule)" rx="10"/>`;
+  km.pts.forEach((q, i) => { g += `<circle cx="${X(q.x)}" cy="${Y(q.y)}" r="5.5" fill="${km.a ? KCOL[km.a[i]] : 'var(--mute)'}" opacity="${km.a ? .85 : .55}"/>`; });
+  km.c.forEach((c, j) => { const x = X(c.x), y = Y(c.y); g += `<g stroke="var(--bg)" stroke-width="8" stroke-linecap="round"><line x1="${x - 11}" y1="${y - 11}" x2="${x + 11}" y2="${y + 11}"/><line x1="${x + 11}" y1="${y - 11}" x2="${x - 11}" y2="${y + 11}"/></g><g stroke="${KCOL[j]}" stroke-width="4" stroke-linecap="round"><line x1="${x - 11}" y1="${y - 11}" x2="${x + 11}" y2="${y + 11}"/><line x1="${x + 11}" y1="${y - 11}" x2="${x - 11}" y2="${y + 11}"/></g>`; });
+  s.innerHTML = g;
+}
+kmData(); seed = 5; kmReset();
+$('kmStep').onclick = kmStep;
+$('kmRun').onclick = () => { let n = 0; const t = setInterval(() => { kmStep(); if (km.done || ++n > 60) clearInterval(t); }, 260); };
+$('kmReset').onclick = kmReset; $('kmK').onchange = kmReset;
+watch($('kmSvg'), drawKm);
+
+/* ---------- 5c · Q-learning ---------- */
+const G = {w: 6, h: 4, start: [0, 3], goal: [5, 0], traps: ['2,1', '2,2', '4,1', '4,3']};
+const ACT = [[0, -1], [1, 0], [0, 1], [-1, 0]], ARR = ['↑', '→', '↓', '←'];
+let Q, eps = 0, lastR = null, agent = null, anim = null;
+function qReset() { Q = {}; for (let x = 0; x < G.w; x++) for (let y = 0; y < G.h; y++) Q[x + ',' + y] = [0, 0, 0, 0]; eps = 0; lastR = null; agent = null; $('rlEp').textContent = '0'; $('rlR').textContent = '—'; $('rlMsg').textContent = 'Sin entrenamiento, el robot se mueve al azar.'; drawRl(); }
+function stepEnv(s, a) {
+  const nx = Math.min(G.w - 1, Math.max(0, s[0] + ACT[a][0])), ny = Math.min(G.h - 1, Math.max(0, s[1] + ACT[a][1])), k = nx + ',' + ny;
+  if (nx === G.goal[0] && ny === G.goal[1]) return [[nx, ny], 10, true];
+  if (G.traps.includes(k)) return [[nx, ny], -10, true];
+  return [[nx, ny], -1, false];
+}
+function episode() {
+  let s = G.start.slice(), tot = 0; const path = [s];
+  for (let t = 0; t < 40; t++) {
+    const q = Q[s.join()], greedy = q.indexOf(Math.max(...q));
+    const a = Math.random() < .25 || q.every(v => v === 0) ? Math.floor(Math.random() * 4) : greedy;
+    const [s2, r, done] = stepEnv(s, a);
+    const target = r + (done ? 0 : .9 * Math.max(...Q[s2.join()]));
+    q[a] += .5 * (target - q[a]);
+    tot += r; s = s2; path.push(s); if (done) break;
+  }
+  eps++; lastR = tot; return path;
+}
+function drawRl() {
+  const s = $('rlSvg'), W = s.clientWidth, H = s.clientHeight; if (!W) return;
+  const cell = Math.min((W - 8) / G.w, (H - 8) / G.h), ox = (W - cell * G.w) / 2, oy = (H - cell * G.h) / 2;
+  let g = '';
+  for (let x = 0; x < G.w; x++) for (let y = 0; y < G.h; y++) {
+    const k = x + ',' + y, px = ox + x * cell, py = oy + y * cell, isG = x === G.goal[0] && y === G.goal[1], isT = G.traps.includes(k);
+    const q = Q[k], mx = Math.max(...q), learned = q.some(v => v !== 0);
+    const fill = isG ? 'color-mix(in srgb, var(--gr) 30%, var(--bg))' : isT ? 'color-mix(in srgb, var(--ca) 22%, var(--bg))' : learned ? `color-mix(in srgb, var(--pr) ${Math.max(4, Math.min(40, (mx + 10) * 2))}%, var(--bg))` : 'var(--panel)';
+    g += `<rect x="${px + 2}" y="${py + 2}" width="${cell - 4}" height="${cell - 4}" rx="8" fill="${fill}" stroke="var(--rule)"/>`;
+    if (isG) g += `<text x="${px + cell / 2}" y="${py + cell / 2 + 6}" text-anchor="middle" font-weight="700" style="font-size:${Math.min(18, cell / 3.4)}px">Meta +10</text>`;
+    else if (isT) g += `<ellipse cx="${px + cell / 2}" cy="${py + cell / 2 + 2}" rx="${cell * .28}" ry="${cell * .16}" fill="var(--ca)" opacity=".75"/><text x="${px + cell / 2}" y="${py + cell - 10}" text-anchor="middle" style="font-size:13px">−10</text>`;
+    else if (learned) g += `<text x="${px + cell / 2}" y="${py + cell / 2 + 8}" text-anchor="middle" style="font-size:${Math.min(26, cell / 2.6)}px;stroke-width:0" fill="var(--pr)">${ARR[q.indexOf(mx)]}</text>`;
+    if (x === G.start[0] && y === G.start[1]) g += `<text x="${px + 8}" y="${py + 18}" style="font-size:13px">inicio</text>`;
+  }
+  const a = agent || G.start, ax = ox + (a[0] + .5) * cell, ay = oy + (a[1] + .5) * cell, rr = cell * .2;
+  g += `<g><rect x="${ax - rr}" y="${ay - rr * .8}" width="${rr * 2}" height="${rr * 1.6}" rx="${rr * .35}" fill="var(--ink)"/><circle cx="${ax - rr * .4}" cy="${ay - rr * .1}" r="${rr * .22}" fill="var(--bg)"/><circle cx="${ax + rr * .4}" cy="${ay - rr * .1}" r="${rr * .22}" fill="var(--bg)"/><line x1="${ax}" y1="${ay - rr * .8}" x2="${ax}" y2="${ay - rr * 1.25}" stroke="var(--ink)" stroke-width="2"/><circle cx="${ax}" cy="${ay - rr * 1.3}" r="${rr * .18}" fill="var(--ca)"/></g>`;
+  s.innerHTML = g;
+}
+function rlStats() { $('rlEp').textContent = eps; $('rlR').textContent = lastR; $('rlMsg').textContent = eps < 15 ? 'Todavía explora mucho: se equivoca y aprende de cada castigo.' : 'Las flechas ya forman un camino: el robot aprendió qué acción conviene en cada casilla. Sigue explorando un 25 % de las veces.'; }
+$('rl1').onclick = () => {
+  clearInterval(anim); const path = episode(); let i = 0;
+  anim = setInterval(() => { agent = path[i++]; drawRl(); if (i >= path.length) { clearInterval(anim); rlStats(); setTimeout(() => { agent = null; drawRl(); }, 700); } }, 150);
+};
+$('rl50').onclick = () => { clearInterval(anim); for (let k = 0; k < 50; k++) episode(); agent = null; drawRl(); rlStats(); };
+$('rlReset').onclick = () => { clearInterval(anim); qReset(); };
+qReset(); watch($('rlSvg'), drawRl);
+
+/* ---------- 6 · regresión ---------- */
+const REG0 = [[45, 2100], [60, 2750], [72, 2900], [85, 3650], [100, 3900], [120, 4850], [140, 5300]];
+let reg = REG0.map(p => p.slice()), regFit = null;
+function fitLine(P) {
+  const n = P.length; if (n < 2) return null;
+  const mx = P.reduce((s, p) => s + p[0], 0) / n, my = P.reduce((s, p) => s + p[1], 0) / n;
+  const sxx = P.reduce((s, p) => s + (p[0] - mx) ** 2, 0); if (sxx === 0) return null;
+  const b = P.reduce((s, p) => s + (p[0] - mx) * (p[1] - my), 0) / sxx, a = my - b * mx;
+  const sst = P.reduce((s, p) => s + (p[1] - my) ** 2, 0), sse = P.reduce((s, p) => s + (p[1] - a - b * p[0]) ** 2, 0);
+  return {a, b, r2: sst ? 1 - sse / sst : 1, mae: P.reduce((s, p) => s + Math.abs(p[1] - a - b * p[0]), 0) / n};
+}
+let regA = null;
+function drawReg() {
+  const s = $('regSvg'), W = s.clientWidth, H = s.clientHeight; if (!W) return;
+  const m = {l: 62, r: 18, t: 30, b: 44};
+  regA = axes(W, H, m, [30, 160], [1000, 6500], 'Superficie (m²)', 'Precio (UF)', [40, 60, 80, 100, 120, 140, 160], [2000, 3000, 4000, 5000, 6000]);
+  let g = regA.g; regFit = fitLine(reg);
+  if (regFit) {
+    reg.forEach(p => { g += `<line x1="${regA.X(p[0])}" y1="${regA.Y(p[1])}" x2="${regA.X(p[0])}" y2="${regA.Y(regFit.a + regFit.b * p[0])}" stroke="var(--ca)" stroke-width="1.2" opacity=".7"/>`; });
+    g += `<line x1="${regA.X(30)}" y1="${regA.Y(regFit.a + regFit.b * 30)}" x2="${regA.X(160)}" y2="${regA.Y(regFit.a + regFit.b * 160)}" stroke="var(--ca)" stroke-width="3"/>`;
+  }
+  reg.forEach(p => { g += `<circle cx="${regA.X(p[0])}" cy="${regA.Y(p[1])}" r="6.5" fill="var(--pr)" stroke="var(--bg)" stroke-width="2"/>`; });
+  s.innerHTML = `<defs><clipPath id="regClip"><rect x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}"/></clipPath></defs>` + g.replace(/(<line x1="[^"]+" y1="[^"]+" x2="[^"]+" y2="[^"]+" stroke="var\(--ca\)" stroke-width="3"\/>)/, '<g clip-path="url(#regClip)">$1</g>');
+  regStats();
+}
+function regStats() {
+  $('regN').textContent = reg.length;
+  if (!regFit) { $('regEq').textContent = 'Agrega al menos 2 puntos'; ['regR2', 'regMae', 'regY'].forEach(i => $(i).textContent = '—'); return; }
+  $('regEq').textContent = `precio = ${fmt(regFit.a)} + ${fmt(regFit.b, 1)} × m²`;
+  $('regR2').textContent = fmt(regFit.r2, 3); $('regMae').textContent = fmt(regFit.mae);
+  const x = +$('regX').value; $('regY').textContent = isFinite(x) ? fmt(regFit.a + regFit.b * x) + ' UF' : '—';
+}
+$('regSvg').addEventListener('click', e => {
+  if (!regA) return; const r = $('regSvg').getBoundingClientRect(), W = r.width, H = r.height, m = {l: 62, r: 18, t: 30, b: 44};
+  const px = e.clientX - r.left, py = e.clientY - r.top; if (px < m.l || px > W - m.r || py < m.t || py > H - m.b) return;
+  const x = 30 + (px - m.l) / (W - m.l - m.r) * 130, y = 1000 + (H - m.b - py) / (H - m.t - m.b) * 5500;
+  reg.push([Math.round(x), Math.round(y / 10) * 10]); drawReg();
+});
+$('regX').oninput = regStats;
+$('regReset').onclick = () => { reg = REG0.map(p => p.slice()); drawReg(); };
+$('regClear').onclick = () => { reg = []; drawReg(); };
+watch($('regSvg'), drawReg);
+
+/* ---------- 7 · k-NN ---------- */
+let knn = students(), knnCls = 0;
+const knnPred = (x, y, k, skip) => {
+  const d = knn.map((p, i) => [i === skip ? 9 : (p.x - x) ** 2 + (p.y - y) ** 2, p.c]).sort((a, b) => a[0] - b[0]).slice(0, k);
+  const v = d.reduce((s, q) => s + q[1], 0); return v * 2 > k ? 1 : 0;
+};
+let knnM = null;
+function drawKnn() {
+  const s = $('knnSvg'), W = s.clientWidth, H = s.clientHeight; if (!W) return;
+  const m = {l: 46, r: 14, t: 30, b: 42}, k = +$('knnK').value;
+  knnM = axes(W, H, m, [0, 1], [0, 1], 'Horas de estudio →', 'Asistencia ↑', [], []);
+  const nx = W < 520 ? 26 : 40, ny = Math.round(nx * (H - m.t - m.b) / (W - m.l - m.r)), cw = (W - m.l - m.r) / nx, ch = (H - m.t - m.b) / ny;
+  let bg = '';
+  for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+    const c = knnPred((i + .5) / nx, 1 - (j + .5) / ny, k);
+    bg += `<rect x="${m.l + i * cw}" y="${m.t + j * ch}" width="${cw + .6}" height="${ch + .6}" fill="${c ? 'var(--cas)' : 'var(--prs)'}"/>`;
+  }
+  let g = bg + knnM.g;
+  knn.forEach(p => { g += p.c ? `<rect x="${knnM.X(p.x) - 5.5}" y="${knnM.Y(p.y) - 5.5}" width="11" height="11" fill="var(--ca)" stroke="var(--bg)" stroke-width="1.5"/>` : `<circle cx="${knnM.X(p.x)}" cy="${knnM.Y(p.y)}" r="6.5" fill="var(--pr)" stroke="var(--bg)" stroke-width="1.5"/>`; });
+  s.innerHTML = g;
+  const acc = knn.filter((p) => knnPred(p.x, p.y, k) === p.c).length / knn.length;
+  $('knnAcc').textContent = fmt(acc * 100, 0) + ' %'; $('knnN').textContent = knn.length; $('knnKv').textContent = k;
+}
+$('knnSvg').addEventListener('click', e => {
+  const r = $('knnSvg').getBoundingClientRect(), m = {l: 46, r: 14, t: 30, b: 42};
+  const x = (e.clientX - r.left - m.l) / (r.width - m.l - m.r), y = 1 - (e.clientY - r.top - m.t) / (r.height - m.t - m.b);
+  if (x < 0 || x > 1 || y < 0 || y > 1) return; knn.push({x, y, c: knnCls}); drawKnn();
+});
+$('knnK').oninput = drawKnn;
+document.querySelectorAll('#knnCls button').forEach(b => b.onclick = () => { knnCls = +b.dataset.c; document.querySelectorAll('#knnCls button').forEach(x => x.setAttribute('aria-pressed', x === b)); });
+$('knnReset').onclick = () => { knn = students(); drawKnn(); };
+watch($('knnSvg'), drawKnn);
+
+/* ---------- 8 · boosting ---------- */
+seed = 17;
+const boAll = Array.from({length: 54}, () => { const x = rnd() * 6.28; return {x, y: Math.sin(x) + .225 * Math.sin(3 * x) + gauss() * .3}; });
+const boTr = boAll.filter((_, i) => i % 3 !== 0), boTe = boAll.filter((_, i) => i % 3 === 0);
+const LR = .5, MAXM = 200, f0 = boTr.reduce((s, p) => s + p.y, 0) / boTr.length;
+const stumps = [];
+{
+  let pred = boTr.map(() => f0);
+  const xs = [...new Set(boTr.map(p => p.x))].sort((a, b) => a - b);
+  for (let m = 0; m < MAXM; m++) {
+    const res = boTr.map((p, i) => p.y - pred[i]); let best = null;
+    for (let k = 0; k < xs.length - 1; k++) {
+      const t = (xs[k] + xs[k + 1]) / 2; let sl = 0, nl = 0, sr = 0, nr = 0;
+      boTr.forEach((p, i) => { if (p.x <= t) { sl += res[i]; nl++; } else { sr += res[i]; nr++; } });
+      const vl = sl / nl, vr = sr / nr; let sse = 0;
+      boTr.forEach((p, i) => { sse += (res[i] - (p.x <= t ? vl : vr)) ** 2; });
+      if (!best || sse < best.sse) best = {t, vl, vr, sse};
+    }
+    stumps.push(best); pred = pred.map((v, i) => v + LR * (boTr[i].x <= best.t ? best.vl : best.vr));
+  }
+}
+const boF = (x, M) => { let v = f0; for (let m = 0; m < M; m++) { const s = stumps[m]; v += LR * (x <= s.t ? s.vl : s.vr); } return v; };
+const mse = (P, M) => P.reduce((s, p) => s + (p.y - boF(p.x, M)) ** 2, 0) / P.length;
+const errTr = [], errTe = [];
+for (let M = 0; M <= MAXM; M++) { errTr.push(mse(boTr, M)); errTe.push(mse(boTe, M)); }
+const bestM = errTe.indexOf(Math.min(...errTe));
+function drawBo() {
+  const s = $('boSvg'), W = s.clientWidth, H = s.clientHeight; if (!W) return;
+  const M = +$('boM').value, m = {l: 40, r: 14, t: 24, b: 40};
+  const A = axes(W, H, m, [0, 6.3], [-1.8, 1.8], 'x', 'y', [0, 1, 2, 3, 4, 5, 6], [-1, 0, 1]);
+  let g = A.g, d = '';
+  for (let i = 0; i <= 300; i++) { const x = i / 300 * 6.3, y = boF(x, M); d += (i ? 'L' : 'M') + A.X(x).toFixed(1) + ' ' + A.Y(y).toFixed(1); }
+  boTr.forEach(p => { g += `<circle cx="${A.X(p.x)}" cy="${A.Y(p.y)}" r="5" fill="var(--pr)"/>`; });
+  boTe.forEach(p => { g += `<circle cx="${A.X(p.x)}" cy="${A.Y(p.y)}" r="5" fill="var(--bg)" stroke="var(--ca)" stroke-width="2"/>`; });
+  g += `<path d="${d}" fill="none" stroke="var(--ink)" stroke-width="3"/>`;
+  if (M > 0) { const st = stumps[M - 1]; g += `<line x1="${A.X(st.t)}" y1="${m.t}" x2="${A.X(st.t)}" y2="${H - m.b}" stroke="var(--oc)" stroke-width="2" stroke-dasharray="4 4"/><text x="${A.X(st.t) + 6}" y="${m.t + 14}" ${A.X(st.t) > W - 160 ? `text-anchor="end" dx="-12"` : ''}>árbol ${M}: corte en x = ${fmt(st.t, 2)}</text>`; }
+  s.innerHTML = g;
+  const e = $('boErr'), W2 = e.clientWidth, H2 = e.clientHeight; if (!W2) return;
+  const m2 = {l: 46, r: 14, t: 26, b: 38}, ymax = Math.max(errTe[2], errTr[2]) * 1.1;
+  const B = axes(W2, H2, m2, [0, MAXM], [0, ymax], 'Número de árboles', 'Error (ECM)', [0, 50, 100, 150, 200], []);
+  const line = (arr) => arr.map((v, i) => (i ? 'L' : 'M') + B.X(i).toFixed(1) + ' ' + B.Y(Math.min(v, ymax)).toFixed(1)).join('');
+  let g2 = B.g + `<path d="${line(errTr)}" fill="none" stroke="var(--pr)" stroke-width="2.5"/><path d="${line(errTe)}" fill="none" stroke="var(--ca)" stroke-width="2.5"/>`;
+  g2 += `<line x1="${B.X(M)}" y1="${m2.t}" x2="${B.X(M)}" y2="${H2 - m2.b}" stroke="var(--ink)" stroke-width="1.5"/>`;
+  const lx = Math.round(MAXM * .8); g2 += `<text x="${B.X(lx)}" y="${B.Y(errTe[lx]) - 10}" text-anchor="middle" fill="var(--ca)">prueba</text><text x="${B.X(lx)}" y="${B.Y(errTr[lx]) - 10}" text-anchor="middle" fill="var(--pr)">entrenamiento</text><circle cx="${B.X(bestM)}" cy="${B.Y(errTe[bestM])}" r="5" fill="var(--ca)"/>`;
+  e.innerHTML = g2;
+  $('boMv').textContent = M; $('boTr').textContent = fmt(errTr[M], 3); $('boTe').textContent = fmt(errTe[M], 3);
+  $('boMsg').textContent = M === 0 ? 'Con 0 árboles el modelo predice el promedio de todos los datos: una línea plana.' : M < 10 ? 'Los primeros árboles capturan la forma general de la onda.' : M <= bestM ? 'Cada árbol nuevo hace correcciones más finas.' : `El menor error de prueba se logró con unos ${bestM} árboles. Desde ahí el modelo empieza a ajustarse al ruido.`;
+}
+$('boM').oninput = drawBo;
+let boT = null;
+$('boPlay').onclick = () => { clearInterval(boT); $('boM').value = 0; boT = setInterval(() => { const v = +$('boM').value + 1; $('boM').value = v; drawBo(); if (v >= MAXM) clearInterval(boT); }, 60); };
+watch($('boSvg'), drawBo); watch($('boErr'), drawBo);
+
+/* ---------- 9 · modelos ---------- */
+const MODS = [
+  ['Regresión lineal', 'Supervisado', 'Regresión', 'Ajusta una recta (o plano) que minimiza el error cuadrático.', 'Relación aproximadamente lineal; necesitas interpretar el efecto de cada variable.', 'Precio de una vivienda según superficie.', 'reg'],
+  ['Regresión logística', 'Supervisado', 'Clasificación', 'Estima la probabilidad de una clase con una curva en forma de S.', 'Clasificación binaria; línea base rápida e interpretable.', '¿Un correo es spam?', 'clas'],
+  ['k vecinos más cercanos (k-NN)', 'Supervisado', 'Clasificación y regresión', 'Decide según los k ejemplos más parecidos.', 'Pocos datos y pocas variables, escaladas.', 'Recomendar productos parecidos.', 'reg clas'],
+  ['Árbol de decisión', 'Supervisado', 'Clasificación y regresión', 'Encadena preguntas de sí o no sobre las variables.', 'Necesitas explicar cada decisión.', 'Aprobar o rechazar un crédito.', 'reg clas'],
+  ['Random Forest', 'Supervisado (bagging)', 'Clasificación y regresión', 'Muchos árboles entrenados en paralelo que votan.', 'Buen rendimiento con poco ajuste; datos tabulares.', 'Detectar transacciones fraudulentas.', 'reg clas'],
+  ['Gradient Boosting (XGBoost, LightGBM, CatBoost)', 'Supervisado (boosting)', 'Clasificación y regresión', 'Árboles en secuencia; cada uno corrige los errores del anterior.', 'Datos tabulares cuando buscas la mejor precisión.', 'Predecir abandono de clientes.', 'reg clas'],
+  ['Máquinas de vectores de soporte (SVM)', 'Supervisado', 'Clasificación (y regresión)', 'Busca la frontera con el mayor margen entre clases.', 'Conjuntos medianos con muchas variables.', 'Clasificar textos por tema.', 'clas'],
+  ['Naive Bayes', 'Supervisado', 'Clasificación', 'Aplica probabilidades suponiendo variables independientes.', 'Texto; cuando se necesita algo muy rápido.', 'Filtro de spam.', 'clas'],
+  ['Redes neuronales', 'Supervisado (y otros)', 'Clasificación y regresión', 'Capas de neuronas que aprenden representaciones de los datos.', 'Imágenes, audio, texto y grandes volúmenes de datos.', 'Reconocer objetos en fotos.', 'reg clas'],
+  ['K-means', 'No supervisado', 'Agrupamiento', 'Forma k grupos alrededor de centros que se van ajustando.', 'Segmentar cuando no hay etiquetas.', 'Segmentación de clientes.', 'uns'],
+  ['DBSCAN', 'No supervisado', 'Agrupamiento y anomalías', 'Agrupa por densidad; los puntos aislados quedan como ruido.', 'Grupos de forma irregular; detectar datos raros.', 'Tráfico de red anómalo.', 'uns'],
+  ['PCA', 'No supervisado', 'Reducción de dimensiones', 'Resume muchas variables en pocas componentes que conservan la variación.', 'Visualizar o simplificar datos con muchas columnas.', 'Resumir 50 sensores en 2 ejes.', 'uns'],
+  ['Q-learning y Deep Q-Network', 'Por refuerzo', 'Toma de decisiones', 'Aprende el valor de cada acción en cada estado por prueba y error.', 'Hay un entorno, acciones y recompensas.', 'Robot que aprende a desplazarse; juegos.', 'rl']
+];
+function renderMods(f) {
+  $('modBody').innerHTML = MODS.filter(r => f === 'all' || r[6].split(' ').includes(f)).map(r => `<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join('');
+}
+document.querySelectorAll('#modChips button').forEach(b => b.onclick = () => { document.querySelectorAll('#modChips button').forEach(x => x.setAttribute('aria-pressed', x === b)); renderMods(b.dataset.f); });
+renderMods('all');
+
+/* ---------- 10 · ajuste ---------- */
+{
+  const P = [[15, 92], [35, 70], [55, 66], [75, 48], [95, 52], [115, 34], [135, 40], [155, 22], [175, 28], [190, 16]];
+  const dots = P.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="var(--pr)"/>`).join('');
+  $('fitU').innerHTML = dots + `<line x1="5" y1="50" x2="195" y2="50" stroke="var(--ca)" stroke-width="3"/>`;
+  $('fitG').innerHTML = dots + `<path d="M5 92 C 60 66, 120 42, 195 18" fill="none" stroke="var(--ca)" stroke-width="3"/>`;
+  $('fitO').innerHTML = dots + `<path d="M5 96 ${P.map(p => 'L' + p[0] + ' ' + p[1]).join(' ')} L198 12" fill="none" stroke="var(--ca)" stroke-width="3" stroke-linejoin="round"/>`;
+}
+
+/* ---------- 11 · Python ---------- */
+const PY = [
+  {t: 'Clasificar flores (Iris) con un árbol de decisión', code:
+`from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+# 1. Cargar datos: 150 flores, 4 medidas, 3 especies
+X, y = load_iris(return_X_y=True)
+
+# 2. Separar 75 % entrenamiento y 25 % prueba
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42, stratify=y)
+
+# 3. Crear y entrenar el modelo
+modelo = DecisionTreeClassifier(max_depth=3, random_state=42)
+modelo.fit(X_train, y_train)
+
+# 4. Evaluar con datos que no vio
+pred = modelo.predict(X_test)
+print("Exactitud:", round(accuracy_score(y_test, pred), 3))
+
+# 5. Predecir una flor nueva (largo y ancho de sépalo y pétalo, en cm)
+nueva = [[5.1, 3.5, 1.4, 0.2]]
+print("Especie predicha:", load_iris().target_names[modelo.predict(nueva)[0]])`,
+   out: 'Exactitud: 0.895\nEspecie predicha: setosa',
+   s: ['<b>X</b> son las características (4 medidas) e <b>y</b> la etiqueta (especie).', '<code>train_test_split</code> guarda un 25 % para evaluar; <code>stratify</code> mantiene la proporción de especies.', '<code>max_depth=3</code> es un hiperparámetro: limita el árbol a 3 niveles de preguntas para que no sobreajuste.', '<code>fit</code> entrena: el árbol aprende qué preguntas separan mejor las especies.', '<code>predict</code> clasifica datos nuevos. Acertó en 34 de 38 flores de prueba (0,895).']},
+  {t: 'Predecir el precio de un departamento con regresión lineal', code:
+`import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+
+# 1. Datos: superficie (m²) y precio (UF) de 7 departamentos
+m2 = np.array([[45], [60], [72], [85], [100], [120], [140]])
+precio = np.array([2100, 2750, 2900, 3650, 3900, 4850, 5300])
+
+# 2. Crear y entrenar
+modelo = LinearRegression().fit(m2, precio)
+
+# 3. Ver lo que aprendió
+print(f"Precio = {modelo.intercept_:.0f} + {modelo.coef_[0]:.1f} × m²")
+print("R²:", round(r2_score(precio, modelo.predict(m2)), 3))
+
+# 4. Predecir un caso nuevo
+print("Predicción para 90 m²:", round(modelo.predict([[90]])[0]), "UF")`,
+   out: 'Precio = 600 + 34.2 × m²\nR²: 0.987\nPredicción para 90 m²: 3675 UF',
+   s: ['Las características van en una matriz de 2 dimensiones (una fila por ejemplo), por eso <code>[[45], [60], …]</code>.', '<code>fit</code> calcula la recta de menor error cuadrático.', '<code>intercept_</code> es el punto de partida y <code>coef_</code> la pendiente: cada m² extra suma unas 34 UF.', 'R² cercano a 1 indica que la recta explica casi toda la variación. Son los mismos datos del gráfico de la sección 6.', 'Con tan pocos datos no se separa un conjunto de prueba; en un proyecto real sí hay que hacerlo.']},
+  {t: 'Agrupar puntos sin etiquetas con k-means', code:
+`from sklearn.datasets import make_blobs
+from sklearn.cluster import KMeans
+
+# 1. Generar 300 puntos en 2D (no usamos la etiqueta real: _)
+X, _ = make_blobs(n_samples=300, centers=3, random_state=7)
+
+# 2. Pedir 3 grupos y entrenar
+kmeans = KMeans(n_clusters=3, n_init=10, random_state=7).fit(X)
+
+# 3. Resultados
+print("Centros:\\n", kmeans.cluster_centers_.round(2))
+print("Grupo de los 10 primeros puntos:", kmeans.labels_[:10])`,
+   out: 'Centros:\n [[-8.55  5.57]\n [ 9.63  0.54]\n [-1.26  4.38]]\nGrupo de los 10 primeros puntos: [0 2 2 0 1 2 0 1 2 0]',
+   s: ['No hay <b>y</b>: es aprendizaje no supervisado.', '<code>n_clusters=3</code> es k, el número de grupos que pedimos.', '<code>n_init=10</code> repite el algoritmo con 10 inicios al azar y se queda con el mejor, porque el resultado depende de dónde parten los centros (como en la demo de la sección 5).', '<code>labels_</code> dice a qué grupo quedó asignado cada punto; los números de grupo no tienen significado propio.']}
+];
+function hl(src) {
+  const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return src.split('\n').map(line => {
+    const k = line.indexOf('#'); let code = k >= 0 ? line.slice(0, k) : line; const com = k >= 0 ? line.slice(k) : '';
+    code = esc(code).replace(/("[^"]*"|f"[^"]*")/g, '<span class="s">$1</span>').replace(/\b(from|import|print|round)\b/g, m => /print|round/.test(m) ? `<span class="f">${m}</span>` : `<span class="k">${m}</span>`);
+    return code + (com ? `<span class="cm">${esc(com)}</span>` : '');
+  }).join('\n');
+}
+let pyI = 0;
+function showPy(i) {
+  pyI = i; const p = PY[i];
+  $('pyCode').innerHTML = hl(p.code); $('pyOut').textContent = p.out; $('pyTitle').textContent = p.t;
+  $('pySteps').innerHTML = p.s.map(x => `<li>${x}</li>`).join('');
+  document.querySelectorAll('#pyTabs button').forEach(b => b.setAttribute('aria-selected', +b.dataset.py === i));
+}
+document.querySelectorAll('#pyTabs button').forEach(b => b.onclick = () => showPy(+b.dataset.py));
+$('pyCopy').onclick = async () => {
+  const b = $('pyCopy');
+  try { await navigator.clipboard.writeText(PY[pyI].code); b.textContent = '¡Copiado!'; }
+  catch (e) { const r = document.createRange(); r.selectNodeContents($('pyCode')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = 'Seleccionado: Ctrl+C'; }
+  setTimeout(() => b.textContent = 'Copiar', 1800);
+};
+showPy(0);
+
+/* ---------- 14 · cuestionario ---------- */
+const QZ = [
+  {q: '¿Qué afirmación describe mejor la relación entre IA, machine learning y deep learning?', o: ['Son tres nombres para la misma tecnología.', 'El deep learning es un tipo de machine learning, y el machine learning es una parte de la IA.', 'La IA es una parte del machine learning.', 'El machine learning es un tipo de deep learning.'], a: 1, w: 'La IA es el campo completo; el machine learning es la parte que aprende de datos, y el deep learning es machine learning con redes neuronales de muchas capas.'},
+  {q: '¿Cuál es la diferencia principal entre el machine learning y la programación tradicional?', o: ['El machine learning no necesita datos.', 'En machine learning una persona escribe todas las reglas a mano.', 'En machine learning el sistema aprende las reglas a partir de datos y respuestas conocidas.', 'La programación tradicional siempre es más precisa.'], a: 2, w: 'En la programación tradicional se escriben las reglas; en machine learning se entregan datos con sus respuestas y el algoritmo obtiene las reglas (el modelo).'},
+  {q: 'Quieres predecir el precio en UF de un departamento según su superficie. ¿Qué tipo de tarea es?', o: ['Regresión', 'Clasificación', 'Agrupamiento', 'Aprendizaje por refuerzo'], a: 0, w: 'La etiqueta (el precio) es un número continuo, por lo tanto es una tarea de regresión.'},
+  {q: 'Tienes datos de clientes sin ninguna etiqueta y quieres formar grupos de clientes parecidos. ¿Qué tipo de aprendizaje corresponde?', o: ['Supervisado', 'No supervisado', 'Por refuerzo', 'Ninguno: sin etiquetas no se puede usar machine learning'], a: 1, w: 'Sin etiquetas, el algoritmo busca estructura por sí solo. Agrupar (por ejemplo, con k-means) es aprendizaje no supervisado.'},
+  {q: 'Un robot aprende a llegar a una meta recibiendo +10 al llegar y −10 al caer en un pozo. ¿Qué tipo de aprendizaje es?', o: ['Supervisado', 'No supervisado', 'Por refuerzo', 'Regresión lineal'], a: 2, w: 'Un agente actúa en un entorno y aprende por prueba y error a partir de recompensas y castigos: es aprendizaje por refuerzo.'},
+  {q: 'La columna "plan" toma los valores Básico, Plus y Pro, sin un orden numérico entre ellos. ¿Qué tipo de dato es?', o: ['Numérico continuo', 'Categórico ordinal', 'Numérico discreto', 'Categórico nominal'], a: 3, w: 'Son categorías sin un orden natural de magnitud: dato categórico nominal. Suele transformarse con one-hot.'},
+  {q: '¿Para qué se separa un conjunto de prueba antes de entrenar?', o: ['Para entrenar más rápido.', 'Para medir el desempeño del modelo con datos que nunca vio.', 'Para tener más datos de entrenamiento.', 'Porque scikit-learn no acepta todos los datos juntos.'], a: 1, w: 'El conjunto de prueba simula datos nuevos: permite estimar cómo funcionará el modelo en la realidad y detectar sobreajuste.'},
+  {q: '¿Qué caracteriza al boosting (por ejemplo, XGBoost o LightGBM)?', o: ['Entrena un solo árbol muy profundo.', 'Entrena muchos árboles en paralelo y los promedia.', 'Agrupa los datos en k grupos.', 'Entrena modelos simples en secuencia, y cada uno corrige los errores de los anteriores.'], a: 3, w: 'El boosting suma modelos débiles en secuencia; cada uno se entrena con los residuos que dejaron los anteriores. Entrenar en paralelo y promediar es bagging (Random Forest).'},
+  {q: 'Un modelo tiene 100 % de exactitud en entrenamiento y 60 % en prueba. ¿Qué está pasando?', o: ['Sobreajuste: memorizó los datos de entrenamiento.', 'Subajuste: el modelo es demasiado simple.', 'Es un modelo perfecto.', 'El conjunto de prueba está mal etiquetado.'], a: 0, w: 'Una gran diferencia entre el desempeño en entrenamiento y en prueba indica sobreajuste: el modelo memorizó en vez de generalizar.'},
+  {q: 'Solo el 1 % de las transacciones son fraude. Un modelo que siempre responde "no es fraude" logra 99 % de exactitud. ¿Qué métrica deja en evidencia que no sirve?', o: ['La exactitud', 'El recall (sensibilidad)', 'El R²', 'El número de árboles'], a: 1, w: 'El recall mide cuántos fraudes reales encontró el modelo. En este caso es 0 %, aunque la exactitud sea 99 %.'}
+];
+const LET = ['A', 'B', 'C', 'D'];
+let qDone = false, qRes = null;
+function renderQuiz() {
+  $('quiz').innerHTML = QZ.map((x, i) => `<fieldset class="qz" id="qz${i}"><legend><span>${i + 1}.</span>${x.q}</legend>${x.o.map((o, j) => `<label><input type="radio" name="q${i}" value="${j}" id="q${i}o${j}"><span>${LET[j]}) ${o}</span></label>`).join('')}<p class="why"><b>Explicación:</b> ${x.w}</p></fieldset>`).join('');
+}
+const nota = (p, max = 10, e = .6) => { const n = p < e * max ? 1 + 3 * p / (e * max) : 4 + 3 * (p - e * max) / (max * (1 - e)); return Math.round(n * 10) / 10; };
+function checkQuiz() {
+  const ans = QZ.map((_, i) => { const c = document.querySelector(`input[name=q${i}]:checked`); return c ? +c.value : null; });
+  const empty = ans.filter(a => a === null).length;
+  if (empty && !$('qCheck').dataset.confirm) { $('qMsg').textContent = `Te faltan ${empty} pregunta${empty > 1 ? 's' : ''} por responder. Si revisas así, contarán como incorrectas. Presiona Revisar otra vez para confirmar.`; $('qCheck').dataset.confirm = '1'; return; }
+  const pts = ans.filter((a, i) => a === QZ[i].a).length, n = nota(pts);
+  qRes = {ans, pts, n, date: new Date()}; qDone = true;
+  QZ.forEach((x, i) => {
+    const fs = $('qz' + i); fs.classList.add('done');
+    fs.querySelectorAll('input').forEach(inp => inp.disabled = true);
+    fs.querySelectorAll('label').forEach((lb, j) => { if (j === x.a) lb.classList.add('ok'); else if (j === ans[i]) lb.classList.add('bad'); });
+    fs.querySelector('legend').insertAdjacentHTML('beforeend', `<b class="mark" style="color:${ans[i] === x.a ? 'var(--gr)' : 'var(--ca)'}">${ans[i] === x.a ? '✓ correcta' : ans[i] === null ? '✗ sin responder' : '✗ incorrecta'}</b>`);
+  });
+  $('qGrade').textContent = fmt(n, 1); $('qGrade').className = 'grade ' + (n >= 4 ? 'pass' : 'fail');
+  $('qScore').textContent = `${pts} de 10 correctas · ${n >= 4 ? 'Aprobado' : 'Reprobado'}`;
+  $('qResult').hidden = false; $('qRetry').hidden = false; $('qCheck').hidden = true; $('qMsg').textContent = ''; $('qPdfMsg').textContent = '';
+  $('qResult').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center'});
+}
+function retryQuiz() {
+  qDone = false; qRes = null; renderQuiz(); delete $('qCheck').dataset.confirm;
+  $('qResult').hidden = true; $('qRetry').hidden = true; $('qCheck').hidden = false; $('qMsg').textContent = '';
+  $('cuestionario').scrollIntoView({block: 'start'});
+}
+function latin(t) { return String(t).replace(/[−–—]/g, '-').replace(/[“”]/g, '"').replace(/[‘’]/g, "'").replace(/✓/g, '').replace(/✗/g, '').replace(/[^\x00-\xFF]/g, ''); }
+function buildPdf() {
+  const {jsPDF} = window.jspdf; const doc = new jsPDF({unit: 'mm', format: 'a4'});
+  const L = 18, R = 192, Wt = R - L; let y = 20;
+  const name = $('qName').value.trim(), course = $('qCourse').value.trim();
+  const blue = [11, 79, 138], red = [193, 18, 31], green = [46, 125, 50], grey = [90, 96, 110];
+  const need = h => { if (y + h > 280) { doc.addPage(); y = 20; } };
+  const para = (txt, size, style, color, indent = 0, gap = 1.5) => {
+    doc.setFont('helvetica', style); doc.setFontSize(size); doc.setTextColor(...color);
+    const lines = doc.splitTextToSize(latin(txt), Wt - indent); const lh = size * .42;
+    need(lines.length * lh); doc.text(lines, L + indent, y); y += lines.length * lh + gap;
+  };
+  doc.setFillColor(...blue); doc.rect(0, 0, 210, 34, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(19); doc.text('Cuestionario: Introducción al Machine Learning', L, 15);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5); doc.text('Prueba revisada automáticamente · 10 preguntas de selección múltiple', L, 23);
+  y = 46;
+  doc.setTextColor(20, 22, 28); doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.text('Estudiante:', L, y); doc.setFont('helvetica', 'normal'); doc.text(latin(name), L + 25, y);
+  y += 6; doc.setFont('helvetica', 'bold'); doc.text('Curso:', L, y); doc.setFont('helvetica', 'normal'); doc.text(latin(course || '-'), L + 25, y);
+  y += 6; doc.setFont('helvetica', 'bold'); doc.text('Fecha:', L, y); doc.setFont('helvetica', 'normal'); doc.text(qRes.date.toLocaleString('es-CL', {dateStyle: 'long', timeStyle: 'short'}), L + 25, y);
+  const pass = qRes.n >= 4;
+  doc.setDrawColor(...(pass ? blue : red)); doc.setLineWidth(.8); doc.roundedRect(140, 40, 52, 28, 3, 3);
+  doc.setTextColor(...(pass ? blue : red)); doc.setFont('helvetica', 'bold'); doc.setFontSize(30); doc.text(fmt(qRes.n, 1), 166, 56, {align: 'center'});
+  doc.setFontSize(10); doc.text(`${qRes.pts}/10 correctas · ${pass ? 'Aprobado' : 'Reprobado'}`, 166, 64, {align: 'center'});
+  y = 76; doc.setDrawColor(200, 204, 212); doc.setLineWidth(.3); doc.line(L, y, R, y); y += 5;
+  para('Escala de 1,0 a 7,0 con 60 % de exigencia (6 respuestas correctas = 4,0).', 9, 'italic', grey, 0, 4);
+  QZ.forEach((x, i) => {
+    const a = qRes.ans[i], ok = a === x.a;
+    need(30);
+    para(`${i + 1}. ${x.q}`, 11, 'bold', [20, 22, 28], 0, 1.2);
+    para(`Tu respuesta: ${a === null ? 'sin responder' : LET[a] + ') ' + x.o[a]}`, 10, 'normal', ok ? green : red, 4, .8);
+    if (!ok) para(`Respuesta correcta: ${LET[x.a]}) ${x.o[x.a]}`, 10, 'normal', green, 4, .8);
+    para(ok ? 'Resultado: correcta' : 'Resultado: incorrecta', 10, 'bold', ok ? green : red, 4, .8);
+    para(`Explicación: ${x.w}`, 9.5, 'normal', grey, 4, 4);
+  });
+  const pages = doc.getNumberOfPages();
+  for (let k = 1; k <= pages; k++) { doc.setPage(k); doc.setFontSize(8.5); doc.setTextColor(...grey); doc.setFont('helvetica', 'normal'); doc.text(`Introducción al Machine Learning · página ${k} de ${pages}`, 105, 290, {align: 'center'}); }
+  return doc;
+}
+function localSave(doc, filename) {
+  const blob = doc.output('blob'), url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = filename; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+async function downloadPdf() {
+  const msg = $('qPdfMsg');
+  if (!qRes) return;
+  if (!$('qName').value.trim()) { msg.textContent = 'Escribe tu nombre arriba del cuestionario para incluirlo en el PDF.'; $('qName').focus(); return; }
+  if (!window.jspdf) { msg.textContent = 'No se pudo cargar el generador de PDF. Revisa tu conexión a internet y recarga la página.'; return; }
+  const safe = $('qName').value.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'estudiante';
+  const filename = `cuestionario-ml-${safe}.pdf`;
+  let doc;
+  try { doc = buildPdf(); } catch (e) { msg.textContent = 'No se pudo generar el PDF.'; return; }
+  // Dentro de claude.ai se usa el aviso de descarga de la plataforma; en cualquier otro lugar, descarga directa.
+  let dl = null;
+  if (window.claude?.use) { try { dl = await Promise.race([window.claude.use('downloads'), new Promise(r => setTimeout(() => r(null), 2500))]); } catch (e) { dl = null; } }
+  if (dl) {
+    try {
+      msg.textContent = 'Confirma la descarga en el aviso que aparece…';
+      await dl.save({filename, data: doc.output('arraybuffer')});
+      msg.textContent = 'PDF descargado.'; return;
+    } catch (e) {
+      const c = e && e.code;
+      if (c === 'declined') { msg.textContent = 'Descarga cancelada. Puedes intentarlo de nuevo.'; return; }
+      if (c === 'rate_limited') { msg.textContent = 'Ya hay un aviso de descarga abierto; espera un momento.'; return; }
+    }
+  }
+  localSave(doc, filename);
+  msg.textContent = `Listo: se descargó ${filename} en tu carpeta de descargas.`;
+}
+renderQuiz();
+$('qCheck').onclick = checkQuiz; $('qRetry').onclick = retryQuiz; $('qPdf').onclick = downloadPdf;
+$('quiz').addEventListener('change', () => { delete $('qCheck').dataset.confirm; if (!qDone) $('qMsg').textContent = ''; });
+}
+</script>
+</body>
+</html>
